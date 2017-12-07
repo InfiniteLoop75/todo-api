@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "eslint": "^4.12.1",
-    "mongodb": "^2.2.5"
+    "mongodb": "^2.2.5",
+    "mongoose": "^4.13.6"
   }
 }
