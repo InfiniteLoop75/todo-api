@@ -38,7 +38,19 @@ server.get('/todos/:id', (req, res)=>{
         res.status(400).send();
     });
 });
-
+server.delete('/todos/:id',(req, res)=>{
+    if(!ObjectID.isValid(req.params.id)){
+        return res.status(404).send();
+    }
+    Todo.findByIdAndRemove(req.params.id).then((doc)=>{
+        if(!doc){
+            return res.status(400).send();
+        }
+        res.status(200).send(doc + '\n\n successfully deleted');
+    }).catch((e)=>{
+        res.status(404).send(e);
+    });
+});
 server.listen(3000, ()=>{
     console.log('Started on PORT 3000');
 });
