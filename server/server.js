@@ -44,11 +44,11 @@ server.delete('/todos/:id',(req, res)=>{
     }
     Todo.findByIdAndRemove(req.params.id).then((doc)=>{
         if(!doc){
-            return res.status(400).send();
+            return res.status(404).send();
         }
         res.status(200).send(doc + '\n\n successfully deleted');
     }).catch((e)=>{
-        res.status(404).send(e);
+        res.status(400).send(e);
     });
 });
 server.listen(3000, ()=>{
