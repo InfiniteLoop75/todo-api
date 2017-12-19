@@ -46,7 +46,7 @@ server.delete('/todos/:id',(req, res)=>{
         if(!doc){
             return res.status(404).send();
         }
-        res.status(200).send(doc + '\n\n successfully deleted');
+        res.status(200).send({doc});
     }).catch((e)=>{
         res.status(400).send(e);
     });
