@@ -52,6 +52,7 @@ MongoClient.connect('mongodb://localhost:27017/TodoApp', (err, db) => {
     console.log('Connected to MongoDB server');
 
     try{
+        db.collection('todos').remove();
         db.collection('todos').insertMany(todos);
     }catch(e){
         console.log(e);

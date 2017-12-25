@@ -82,4 +82,25 @@ server.patch('/todos/:id', (req, res)=>{
         res.status(400).send();
     });
 });
+
+//POST /users
+server.post('/users', (req, res)=>{
+    var body = _.pick(req.body, ['email', 'password']);
+    var user = new User({
+        email: body.email,
+        password: body.password
+    });
+
+    
+
+
+    user.save().then(()=>{
+        return user.generateAuthToken().then((token)=>{
+            res.header('x-auth', token).send(user);
+        });
+    }, (e)=>{
+        res.status(400).send(e);
+    });
+    
+});
 module.exports = {server};
