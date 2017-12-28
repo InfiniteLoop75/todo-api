@@ -3,6 +3,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const {ObjectID} = require('mongodb');
 const {mongoose} = require('./db/mongoose');
+const {authenticate} = require('./middleware/authenticate');
 const {Todo} = require('./models/todo');
 const {User} = require('./models/user');
 const server = express();
@@ -102,5 +103,9 @@ server.post('/users', (req, res)=>{
         res.status(400).send(e);
     });
     
+});
+ 
+server.get('/users/me', authenticate, (req, res)=>{
+    res.send(req.user);
 });
 module.exports = {server};
