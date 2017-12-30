@@ -53,9 +53,7 @@ server.delete('/todos/:id',(req, res)=>{
         res.status(400).send(e);
     });
 });
-server.listen(3000, ()=>{
-    console.log('Started on PORT 3000');
-});
+
 server.patch('/todos/:id', (req, res)=>{
     var id = req.params.id;
     var body = _.pick(req.body, ['text', 'completed']);
@@ -120,5 +118,19 @@ server.post('/users/login/', (req, res)=>{
     }).catch((e)=>{
         res.status(400).send();
     });
+});
+
+server.delete('/users/me/token', authenticate, (req, res) =>{
+    req.user.removeToken(req.token).then(()=>{
+        res.status(200).send();
+    }, ()=>{
+        res.status(400).send();
+    });
+});
+
+
+
+server.listen(3000, ()=>{
+    console.log('Started on PORT 3000');
 });
 module.exports = {server};
