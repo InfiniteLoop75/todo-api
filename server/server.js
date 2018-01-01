@@ -9,9 +9,10 @@ const {User} = require('./models/user');
 const server = express();
 
 server.use(bodyParser.json());
-server.post('/todos', (req, res)=>{
+server.post('/todos', authenticate, (req, res)=>{
     var todo = new Todo({
-        text: req.body.text
+        text: req.body.text,
+        _owner: req.user._id
     });
     todo.save().then((doc)=>{
         res.send(doc);
@@ -19,18 +20,23 @@ server.post('/todos', (req, res)=>{
         res.status(400).send(e);
     });
 });
-server.get('/todos',  (req, res)=>{
-    Todo.find().then((todos)=>{
+server.get('/todos', authenticate, (req, res)=>{
+    Todo.find({
+        _owner: req.user._id
+    }).then((todos)=>{
         res.send({todos});
     }, (e)=>{
         res.status(400).send(e);
     });
 });
-server.get('/todos/:id', (req, res)=>{
+server.get('/todos/:id', authenticate, (req, res)=>{
     if(!ObjectID.isValid(req.params.id)){
         return res.status(404).send('not found');
     }
-    Todo.findById(req.params.id).then((todo)=>{
+    Todo.findOne({
+        _id: req.params.id,
+        _owner: req.user._id
+    }).then((todo)=>{
         
         if(!todo){
             return res.status(404).send();
@@ -40,11 +46,14 @@ server.get('/todos/:id', (req, res)=>{
         res.status(400).send();
     });
 });
-server.delete('/todos/:id',(req, res)=>{
+server.delete('/todos/:id', authenticate,(req, res)=>{
     if(!ObjectID.isValid(req.params.id)){
         return res.status(404).send();
     }
-    Todo.findByIdAndRemove(req.params.id).then((doc)=>{
+    Todo.findOneAndRemove({
+        _id: req.params._id,
+        _owner: req.user._id
+    }).then((doc)=>{
         if(!doc){
             return res.status(404).send();
         }
@@ -54,7 +63,7 @@ server.delete('/todos/:id',(req, res)=>{
     });
 });
 
-server.patch('/todos/:id', (req, res)=>{
+server.patch('/todos/:id', authenticate,(req, res)=>{
     var id = req.params.id;
     var body = _.pick(req.body, ['text', 'completed']);
     if(!ObjectID.isValid(req.params.id)){
@@ -66,7 +75,10 @@ server.patch('/todos/:id', (req, res)=>{
         body.completed = false;
         body.completedAt = null;
     }
-    Todo.findByIdAndUpdate(id, 
+    Todo.findOneAndUpdate({
+        _id: id,
+        _owner: req.user._id
+    }, 
         {
             $set: body
         },
